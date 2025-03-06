@@ -14,7 +14,9 @@ const app = express();
 app.use(cors());
 app.use(passport.initialize());
 app.use(express.json());
-
+app.get("/", (req, res) => {
+    res.send("Hello from Node.js on Vercel!");
+});
 // Routes
 app.use("/auth", authRoutes);
 app.use("/puzzle", puzzleRoutes);

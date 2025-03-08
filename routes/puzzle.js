@@ -7,21 +7,29 @@ const router = express.Router();
 
 router.post("/create", async (req, res) => {
     try {
-        const { question, options, correctAnswer } = req.body;
+        const puzzlesData = req.body; // Expecting an array of puzzle objects
 
-        const puzzle = new Puzzle({
+        // Validate that puzzlesData is an array
+        if (!Array.isArray(puzzlesData)) {
+            return res.status(400).json({ message: "Request body must be an array of puzzles" });
+        }
+
+        // Map the incoming data to Puzzle documents, adding a date to each
+        const puzzles = puzzlesData.map(({ question, options, correctAnswer }) => ({
             question,
             options,
-            correctAnswer
-        });
+            correctAnswer,
+            date: new Date() // Explicitly set a date for each puzzle
+        }));
 
-        await puzzle.save();
-        res.json(puzzle);
+        // Insert all puzzles into the database at once
+        const savedPuzzles = await Puzzle.insertMany(puzzles);
+        res.json(savedPuzzles);
     } catch (error) {
-        console.error("Error creating puzzle:", error);
+        console.error("Error creating puzzles:", error);
         res.status(500).json({ message: "Internal Server Error" });
     }
-})
+});
 
 // ✅ Get a random unsolved puzzle for a user
 router.get("/random", authenticate, async (req, res) => {
@@ -62,9 +70,18 @@ router.post("/submit", authenticate, async (req, res) => {
         const isCorrect = puzzle.correctAnswer[user.language] === answer;
 
         // Add puzzle to solved list
-        if (!user.solvedPuzzles.includes(puzzleId)) {
-            user.solvedPuzzles.push(puzzleId);
-            await user.save();
+
+
+        if (isCorrect) {
+            // ✅ Update user points in MongoDB
+            await User.findByIdAndUpdate(userId, { $inc: { points: 10 } });
+            if (!user.solvedPuzzles.includes(puzzleId)) {
+                user.solvedPuzzles.push(puzzleId);
+                await user.save();
+            }
+            return res.json({ correct: true, message: "Correct answer!", pointsEarned: 10 });
+        } else {
+            return res.json({ correct: false, message: "Wrong answer!" });
         }
 
         res.json({ correct: isCorrect });

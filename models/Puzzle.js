@@ -6,14 +6,15 @@ const puzzleSchema = new mongoose.Schema({
         hi: { type: String, required: true }
     },
     options: {
-        en: [{ type: String, required: true }],  // 4 Options in English
-        hi: [{ type: String, required: true }]   // 4 Options in Hindi
+        en: [{ type: String, required: true }],
+        hi: [{ type: String, required: true }]
     },
     correctAnswer: {
         en: { type: String, required: true },
         hi: { type: String, required: true }
-    }
-});
+    },
+
+}, { timestamps: true });
 
 const Puzzle = mongoose.model("Puzzle", puzzleSchema);
 export default Puzzle;

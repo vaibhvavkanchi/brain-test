@@ -5,7 +5,8 @@ const userSchema = new mongoose.Schema({
     name: { type: String },
     email: { type: String },
     solvedPuzzles: [{ type: mongoose.Schema.Types.ObjectId, ref: "Puzzle" }],
-    language: { type: String, enum: ["en", "hi"], default: "en" } // Store user-selected language
+    language: { type: String, enum: ["en", "hi"], default: "en" },// Store user-selected language
+    points: { type: Number, default: 0 }
 });
 
 const User = mongoose.model("User", userSchema);

@@ -6,6 +6,7 @@ import cors from "cors";
 
 import authRoutes from "./routes/auth.js";
 import puzzleRoutes from "./routes/puzzle.js";
+import user from "./routes/user.js";
 // import "./config/passport.js"; // Import Passport config
 
 dotenv.config();
@@ -20,6 +21,8 @@ app.get("/", (req, res) => {
 // Routes
 app.use("/auth", authRoutes);
 app.use("/puzzle", puzzleRoutes);
+app.use("/user", user);
+
 
 const PORT = process.env.PORT || 5000;
 mongoose

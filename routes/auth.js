@@ -24,6 +24,8 @@ router.post("/google", async (req, res) => {
         const payload = ticket.getPayload();
         console.log("Google User:", payload);
 
+        const profileImage = payload.picture || "";
+
         // Check if user exists in DB, else create a new one
         let user = await User.findOne({ googleId: payload.sub });
 
@@ -32,6 +34,7 @@ router.post("/google", async (req, res) => {
                 googleId: payload.sub,
                 name: payload.name,
                 email: payload.email,
+                profileImage,
                 solvedPuzzles: [],
                 language // Store user's selected language
             });

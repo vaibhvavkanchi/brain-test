@@ -22,4 +22,27 @@ router.post("/addPoints", authenticate, async (req, res) => {
     }
 });
 
+router.get("/profile", authenticate, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select("-password"); // Exclude password field if present
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json({
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            profileImage: user.profileImage,
+            language: user.language,
+            points: user.points,
+            solvedPuzzles: user.solvedPuzzles
+        });
+    } catch (error) {
+        console.error("Error fetching profile:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+
 export default router;

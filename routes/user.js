@@ -14,6 +14,7 @@ router.post("/addPoints", authenticate, async (req, res) => {
         if (!user) return res.status(404).json({ message: "User not found" });
 
         user.points += points;
+        user.coins += points; // Add points to coins as well
         await user.save();
         res.json({ message: "Points added successfully!" });
     } catch (error) {
@@ -37,10 +38,28 @@ router.get("/profile", authenticate, async (req, res) => {
             profileImage: user.profileImage,
             language: user.language,
             points: user.points,
+            coins: user.coins,
             solvedPuzzles: user.solvedPuzzles
         });
     } catch (error) {
         console.error("Error fetching profile:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+
+router.put("/updateLanguage", authenticate, async (req, res) => {
+    const { language } = req.body;
+    const userId = req.user.id;
+
+    try {
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        user.language = language;
+        await user.save();
+        res.json({ message: "Language updated successfully!" });
+    } catch (error) {
+        console.error("Error updating language:", error);
         res.status(500).json({ message: "Server Error" });
     }
 });

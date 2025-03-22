@@ -74,7 +74,7 @@ router.post("/submit", authenticate, async (req, res) => {
 
         if (isCorrect) {
             // ✅ Update user points in MongoDB
-            await User.findByIdAndUpdate(userId, { $inc: { points: 10 } });
+            await User.findByIdAndUpdate(userId, { $inc: { points: 10, coins: 10 } });
             if (!user.solvedPuzzles.includes(puzzleId)) {
                 user.solvedPuzzles.push(puzzleId);
                 await user.save();
@@ -84,7 +84,6 @@ router.post("/submit", authenticate, async (req, res) => {
             return res.json({ correct: false, message: "Wrong answer!" });
         }
 
-        res.json({ correct: isCorrect });
     } catch (error) {
         console.error("Error submitting puzzle:", error);
         res.status(500).json({ message: "Internal Server Error" });

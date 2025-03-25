@@ -5,18 +5,44 @@ import { authenticate } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 // ✅ Add User Points
+// router.post("/addPoints", authenticate, async (req, res) => {
+//     const { points } = req.body;
+//     const userId = req.user.id;
+
+//     try {
+//         const user = await User.findById(userId);
+//         if (!user) return res.status(404).json({ message: "User not found" });
+
+//         user.points += points;
+//         user.coins += points; // Add points to coins as well
+//         await user.save();
+//         res.json({ message: "Points added successfully!" });
+//     } catch (error) {
+//         console.error("Error adding points:", error);
+//         res.status(500).json({ message: "Server Error" });
+//     }
+// });
 router.post("/addPoints", authenticate, async (req, res) => {
-    const { points } = req.body;
+    const { points, source } = req.body;
     const userId = req.user.id;
+
+    // ✅ Validate source type
+    if (!["question", "scratch", "spin"].includes(source)) {
+        return res.status(400).json({ message: "Invalid source type" });
+    }
 
     try {
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ message: "User not found" });
 
+        // Update points
         user.points += points;
-        user.coins += points; // Add points to coins as well
+
+        // Store transaction with source
+        user.transactions.push({ points, type: "earn", source });
+
         await user.save();
-        res.json({ message: "Points added successfully!" });
+        res.json({ message: "Points added successfully!", currentPoints: user.points });
     } catch (error) {
         console.error("Error adding points:", error);
         res.status(500).json({ message: "Server Error" });

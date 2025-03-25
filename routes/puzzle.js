@@ -59,13 +59,17 @@ router.get("/random", authenticate, async (req, res) => {
 // ✅ Submit puzzle answer
 router.post("/submit", authenticate, async (req, res) => {
     try {
-        const { puzzleId, answer } = req.body;
+        const { puzzleId, answer, source } = req.body;
         const userId = req.user.id;
 
         const user = await User.findById(userId);
         const puzzle = await Puzzle.findById(puzzleId);
 
         if (!puzzle) return res.status(404).json({ message: "Puzzle not found" });
+
+        if (!["question", "scratch", "spin"].includes(source)) {
+            return res.status(400).json({ message: "Invalid source type" });
+        }
 
         const isCorrect = puzzle.correctAnswer[user.language] === answer;
 
@@ -77,6 +81,7 @@ router.post("/submit", authenticate, async (req, res) => {
             await User.findByIdAndUpdate(userId, { $inc: { points: 10, coins: 10 } });
             if (!user.solvedPuzzles.includes(puzzleId)) {
                 user.solvedPuzzles.push(puzzleId);
+                user.transactions.push({ points, type: "earn", source });
                 await user.save();
             }
             return res.json({ correct: true, message: "Correct answer!", pointsEarned: 10 });

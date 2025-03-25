@@ -81,7 +81,7 @@ router.post("/submit", authenticate, async (req, res) => {
             await User.findByIdAndUpdate(userId, { $inc: { points: 10, coins: 10 } });
             if (!user.solvedPuzzles.includes(puzzleId)) {
                 user.solvedPuzzles.push(puzzleId);
-                user.transactions.push({ points, type: "earn", source });
+                user.transactions.push({ points: 10, type: "earn", source: source, date: new Date() });
                 await user.save();
             }
             return res.json({ correct: true, message: "Correct answer!", pointsEarned: 10 });

@@ -37,7 +37,7 @@ router.post("/addPoints", authenticate, async (req, res) => {
 
         // Update points
         user.points += points;
-
+        user.coins += points;
         // Store transaction with source
         user.transactions.push({ points, type: "earn", source });
 

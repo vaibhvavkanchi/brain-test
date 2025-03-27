@@ -16,7 +16,12 @@ const userSchema = new mongoose.Schema({
     language: { type: String, enum: ["en", "hi"], default: "en" },// Store user-selected language
     points: { type: Number, default: 0 },
     coins: { type: Number, default: 0 },
-    transactions: [transactionSchema] // ✅ Store transaction history
+    transactions: [transactionSchema], // ✅ Store transaction history
+    spinLimit: { type: Number, default: 3 }, // ✅ Set daily spin limit
+    dailySpins: { type: Number, default: 0 }, // ✅ Track number of spins used
+    lastSpinDate: { type: Date, default: null } // ✅ Track the last spin date
+
+
 });
 
 const User = mongoose.model("User", userSchema);

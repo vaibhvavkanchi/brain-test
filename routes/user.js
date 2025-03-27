@@ -73,6 +73,45 @@ router.get("/profile", authenticate, async (req, res) => {
     }
 });
 
+router.get("/spinLimit", authenticate, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        // Reset daily spins if it's a new day
+        const today = new Date().toISOString().split("T")[0];
+        const lastSpinDay = user.lastSpinDate ? user.lastSpinDate.toISOString().split("T")[0] : null;
+
+        if (today !== lastSpinDay) {
+            user.dailySpins = 0; // Reset spins
+            user.lastSpinDate = new Date();
+            await user.save();
+        }
+
+        res.json({ spinLimit: user.spinLimit, dailySpins: user.dailySpins });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+router.post("/spin", authenticate, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        if (user.dailySpins >= user.spinLimit) {
+            return res.status(400).json({ message: "Daily spin limit reached" });
+        }
+
+        user.dailySpins += 1;
+        await user.save();
+
+        res.json({ message: "Spin recorded", dailySpins: user.dailySpins });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 router.put("/updateLanguage", authenticate, async (req, res) => {
     const { language } = req.body;
     const userId = req.user.id;

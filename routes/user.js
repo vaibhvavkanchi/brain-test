@@ -111,6 +111,49 @@ router.post("/spin", authenticate, async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+router.post("/redeemFlip", authenticate, async (req, res) => {
+    try {
+        const { reward } = req.body;
+        const user = await User.findOne({ googleId: req.user.googleId });
+
+        if (user.flipLimit > 0) {
+            user.flipLimit -= 1;
+
+            // Add reward to user
+            if (reward.includes("Coins")) {
+                user.coins += parseInt(reward.split(" ")[0]);
+            } else if (reward === "Extra Flip") {
+                user.flipLimit += 1;
+            }
+
+            await user.save();
+            res.json({ message: "Flip redeemed!", flipLimit: user.flipLimit, coins: user.coins });
+        } else {
+            res.status(400).json({ message: "No flips left!" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+
+router.get("/flipLimit", authenticate, async (req, res) => {
+    try {
+        const user = await User.findOne({ googleId: req.user.googleId });
+
+        // Reset limit if a new day
+        const today = new Date().toDateString();
+        if (user.lastFlipDate !== today) {
+            user.flipLimit = 3;
+            user.lastFlipDate = today;
+            await user.save();
+        }
+
+        res.json({ flipLimit: user.flipLimit });
+    } catch (error) {
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+
 
 router.put("/updateLanguage", authenticate, async (req, res) => {
     const { language } = req.body;

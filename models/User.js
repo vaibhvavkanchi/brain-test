@@ -19,8 +19,9 @@ const userSchema = new mongoose.Schema({
     transactions: [transactionSchema], // ✅ Store transaction history
     spinLimit: { type: Number, default: 3 }, // ✅ Set daily spin limit
     dailySpins: { type: Number, default: 0 }, // ✅ Track number of spins used
-    lastSpinDate: { type: Date, default: null } // ✅ Track the last spin date
-
+    lastSpinDate: { type: Date, default: null }, // ✅ Track the last spin date
+    flipLimit: { type: Number, default: 3 }, // 💡 Daily flips
+    lastFlipDate: { type: Date, default: null } // 💡 Reset daily
 
 });
 

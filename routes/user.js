@@ -114,7 +114,7 @@ router.post("/spin", authenticate, async (req, res) => {
 router.post("/redeemFlip", authenticate, async (req, res) => {
     try {
         const { reward } = req.body;
-        const user = await User.findOne({ googleId: req.user.googleId });
+        const user = await User.findById(req.user.id);
 
         if (user.flipLimit > 0) {
             user.flipLimit -= 1;

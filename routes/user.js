@@ -139,6 +139,7 @@ router.post("/redeemFlip", authenticate, async (req, res) => {
 router.get("/flipLimit", authenticate, async (req, res) => {
     try {
         const user = await User.findOne(req.user.id);
+        console.log(user)
 
         // Reset limit if a new day
         const today = new Date().toDateString();
@@ -150,6 +151,7 @@ router.get("/flipLimit", authenticate, async (req, res) => {
 
         res.json({ flipLimit: user.flipLimit });
     } catch (error) {
+        console.log(error)
         res.status(500).json({ message: "Server Error" });
     }
 });

@@ -123,6 +123,7 @@ router.post("/redeemFlip", authenticate, async (req, res) => {
             // Add reward to user
             if (reward.includes("Coins")) {
                 user.coins += parseInt(reward.split(" ")[0]);
+                user.transactions.push({ points, type: "earn", source: "flip" });
             } else if (reward === "Extra Flip") {
                 user.flipLimit += 1;
             }
@@ -149,7 +150,7 @@ router.get("/flipLimit", authenticate, async (req, res) => {
             await user.save();
         }
 
-        res.json({ flipLimit: user.flipLimit });
+        res.json({ flipLimit: user.flipLimit, dailyFlips: user.dailyFlips });
     } catch (error) {
         res.status(500).json({ message: "Server Error" });
     }

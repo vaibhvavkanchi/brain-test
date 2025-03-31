@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const transactionSchema = new mongoose.Schema({
     points: { type: Number, required: true },
     type: { type: String, enum: ["earn", "spend"], required: true }, // "earn" for adding points, "spend" for using points
-    source: { type: String, enum: ["question", "scratch", "spin"], required: true }, // ✅ Track source
+    source: { type: String, enum: ["question", "scratch", "spin", "flip"], required: true }, // ✅ Track source
     date: { type: Date, default: Date.now }
 });
 

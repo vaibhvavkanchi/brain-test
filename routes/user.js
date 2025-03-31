@@ -138,7 +138,7 @@ router.post("/redeemFlip", authenticate, async (req, res) => {
 
 router.get("/flipLimit", authenticate, async (req, res) => {
     try {
-        const user = await User.findOne({ googleId: req.user.googleId });
+        const user = await User.findOne(req.user.id);
 
         // Reset limit if a new day
         const today = new Date().toDateString();

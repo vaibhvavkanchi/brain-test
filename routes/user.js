@@ -115,10 +115,11 @@ router.post("/redeemFlip", authenticate, async (req, res) => {
     try {
         const { reward } = req.body;
         const user = await User.findById(req.user.id);
-
+        console.log(reward);
         if (user.flipLimit > 0) {
             user.flipLimit -= 1;
-
+            user.dailyFlips += 1; // Increment daily flips
+            user.lastFlipDate = new Date(); // Update last flip date
             // Add reward to user
             if (reward.includes("Coins")) {
                 user.coins += parseInt(reward.split(" ")[0]);

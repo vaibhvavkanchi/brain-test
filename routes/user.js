@@ -142,7 +142,7 @@ router.get("/flipLimit", authenticate, async (req, res) => {
 
         // Reset limit if a new day
         const today = new Date().toDateString();
-        if (user.lastFlipDate !== today) {
+        if (user.lastFlipDate !== today || user.lastFlipDate === null) {
             user.flipLimit = 3;
             user.lastFlipDate = today;
             await user.save();
